@@ -1,0 +1,30 @@
+{
+  "skill_name": "a-share-short-decision",
+  "version": "1.0.0",
+  "market": "CN-A",
+  "data_source": {
+    "provider": "akshare",
+    "fallback_enabled": true
+  },
+  "strategy": {
+    "holding_days_default": "1-3",
+    "weights": {
+      "market_sentiment": 0.25,
+      "sector_strength": 0.25,
+      "stock_volume_strength": 0.2,
+      "capital_inflow": 0.2,
+      "technical_structure": 0.1
+    },
+    "thresholds": {
+      "buy": 75,
+      "watch": 60,
+      "market_block": 40
+    }
+  },
+  "risk_control": {
+    "max_single_position": 0.15,
+    "stop_loss_pct": -6,
+    "take_profit_pct": 12,
+    "ma5_break_stop": true
+  }
+}
