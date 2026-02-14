@@ -1,5 +1,6 @@
 ---
-name: daily-recommendation-subskill
+name: 每日推荐 Daily Recommendation
+slug: daily-recommendation
 description: Produce daily short-term A-share recommendation artifacts using current strategy config, and store outputs in data/. Use after optimization or on normal daily scan.
 ---
 

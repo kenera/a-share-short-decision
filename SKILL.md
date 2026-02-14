@@ -1,5 +1,6 @@
 ---
-name: a-share-short-decision
+name: A股短线交易决策 A-Share Short-Term Decision
+slug: a-share-short-decision
 description: A-share short-term trading decision skill for 1-5 day horizon. Use when you need real-data market sentiment, sector rotation, strong stock scanning, capital flow confirmation, date-based short-term signal scoring, prediction logging, and next-day market comparison for CN A-share momentum trading.
 ---
 

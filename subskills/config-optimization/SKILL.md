@@ -1,5 +1,6 @@
 ---
-name: config-optimization-subskill
+name: 配置优化 Config Optimization
+slug: config-optimization
 description: Optimize aggressive A-share screener settings and output optimized config/report artifacts into data/. Use when strategy configuration needs recurring tuning before daily stock recommendation.
 ---
 
