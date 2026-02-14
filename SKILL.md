@@ -46,3 +46,14 @@ python3 main.py run_prediction_for_date --date 2026-02-12
 python3 main.py compare_prediction_with_market --prediction-date 2026-02-12 --actual-date 2026-02-13
 python3 main.py generate_daily_report --date 2026-02-12
 ```
+
+## Subskills Workflow
+
+For recurring optimize-then-recommend flow, run:
+
+```bash
+python3 subskills/config-optimization/optimize_from_aggressive.py --analysis-period "2026-02-01 to 2026-02-12"
+python3 subskills/daily-recommendation/generate_daily_recommendation.py --date 2026-02-14
+```
+
+All generated artifacts are stored under `data/`.
