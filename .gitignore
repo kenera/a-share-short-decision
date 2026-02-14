@@ -1,3 +1,4 @@
 tools/__pycache__/**
 data
 data/**
+config_aggressive_optimized.json

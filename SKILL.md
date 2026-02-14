@@ -41,8 +41,8 @@ Required behavior:
 ## Runtime
 
 ```bash
-python main.py short_term_signal_engine --date 2026-02-12
-python main.py run_prediction_for_date --date 2026-02-12
-python main.py compare_prediction_with_market --prediction-date 2026-02-12 --actual-date 2026-02-13
-python main.py generate_daily_report --date 2026-02-12
+python3 main.py short_term_signal_engine --date 2026-02-12
+python3 main.py run_prediction_for_date --date 2026-02-12
+python3 main.py compare_prediction_with_market --prediction-date 2026-02-12 --actual-date 2026-02-13
+python3 main.py generate_daily_report --date 2026-02-12
 ```
