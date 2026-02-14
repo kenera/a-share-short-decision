@@ -1,4 +1,4 @@
-"""Signal fusion engine for short-term stock decisions."""
+﻿"""Signal fusion engine for short-term stock decisions."""
 
 from __future__ import annotations
 
@@ -42,22 +42,32 @@ def _calc_technical_score(stocks: List[dict[str, Any]]) -> float:
     return clamp(55 + ratio * 10, 0, 100)
 
 
-def short_term_signal_engine(debug: bool = False) -> Dict[str, Any]:
-    """
-    Build short-term signal with weighted factors:
-    - market sentiment: 25%
-    - sector strength: 25%
-    - stock volume/strength: 20%
-    - capital inflow: 20%
-    - technical structure: 10%
-    """
+def _build_no_recommendation_message(
+    signal: str,
+    stocks: List[dict[str, Any]],
+    top_sectors: List[dict[str, Any]],
+    sentiment_score: float,
+) -> str:
+    if signal == "SHORT_BUY" and stocks:
+        return "已筛选到可跟踪标的，请结合盘中量能确认后执行。"
+    if sentiment_score < 40:
+        return "当前市场情绪偏弱，建议禁止开新仓，等待情绪修复。"
+    if not top_sectors:
+        return "未获取到可靠板块轮动数据，建议今日观望，等待数据恢复。"
+    if not stocks:
+        return "当前未筛选到满足短线条件的真实标的，建议继续观望。"
+    return "当前不满足短线开仓条件，建议观望。"
+
+
+def short_term_signal_engine(analysis_date: str | None = None, debug: bool = False) -> Dict[str, Any]:
+    """Build weighted short-term signal."""
     debug = resolve_debug(debug)
-    sentiment = get_market_sentiment(debug=debug)
-    sector_info = get_sector_rotation(top_n=5, debug=debug)
+    sentiment = get_market_sentiment(analysis_date=analysis_date, debug=debug)
+    sector_info = get_sector_rotation(top_n=5, analysis_date=analysis_date, debug=debug)
     sector_names = [x["name"] for x in sector_info.get("top_sectors", [])]
-    stocks = scan_strong_stocks(sectors=sector_names, top_n=5, debug=debug)
+    stocks = scan_strong_stocks(sectors=sector_names, top_n=5, analysis_date=analysis_date, debug=debug)
     target_symbol = stocks[0]["code"] if stocks else None
-    capital = analyze_capital_flow(symbol=target_symbol, debug=debug)
+    capital = analyze_capital_flow(symbol=target_symbol, analysis_date=analysis_date, debug=debug)
     risk = short_term_risk_control(float(sentiment.get("market_sentiment_score", 0.0)))
 
     sentiment_score = float(sentiment.get("market_sentiment_score", 0.0))
@@ -75,7 +85,7 @@ def short_term_signal_engine(debug: bool = False) -> Dict[str, Any]:
     )
     score = round(clamp(score, 0, 100), 2)
 
-    if score >= 75 and risk["market_filter"]:
+    if score >= 75 and risk["market_filter"] and len(stocks) > 0:
         signal = "SHORT_BUY"
         confidence = clamp(score / 100.0 * 0.9, 0.0, 0.95)
         holding_days = "1-3"
@@ -88,7 +98,10 @@ def short_term_signal_engine(debug: bool = False) -> Dict[str, Any]:
         confidence = clamp(score / 100.0 * 0.6, 0.0, 0.7)
         holding_days = "0"
 
+    no_msg = _build_no_recommendation_message(signal, stocks, sector_info.get("top_sectors", []), sentiment_score)
+
     payload = {
+        "analysis_date": sentiment.get("analysis_date", analysis_date),
         "score": score,
         "signal": signal,
         "holding_days": holding_days,
@@ -98,6 +111,8 @@ def short_term_signal_engine(debug: bool = False) -> Dict[str, Any]:
         "top_sectors": sector_info.get("top_sectors", []),
         "candidates": stocks,
         "capital_flow": capital,
+        "has_recommendation": len(stocks) > 0 and signal == "SHORT_BUY",
+        "no_recommendation_message": no_msg,
         "factor_breakdown": {
             "market_sentiment": round(sentiment_score, 2),
             "sector_strength": round(sector_score, 2),
